@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "Пользователь" as User
+actor "Саппорт" as Support
+package "Система" {
+usecase "Вход в систему" as UC_Login
+usecase "Создать заявку" as Create_Ticket
+usecase "Просмотреть статус заявки" as StatusCheck
+usecase "Добавить комментарий" as addComment
+usecase "Просмотр новых заявок" as CheckNewTicket
+usecase "Отправить ответ пользователю" as sendAnswer
+usecase "Изменить статус заявки" as changeStatus
+}
+User --> UC_Login
+Support --> UC_Login
+User --> Create_Ticket
+User --> StatusCheck
+User --> addComment
+Support --> CheckNewTicket
+Support --> sendAnswer
+Support --> StatusCheck
+Support --> changeStatus
+@enduml
