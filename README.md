@@ -20,3 +20,5 @@
 
 Use case диаграмма
 
+
+<img width="461" height="603" alt="Use case" src="https://github.com/user-attachments/assets/4c359ef4-230d-49b7-ba4b-a4bf37721101" />
