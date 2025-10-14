@@ -22,4 +22,13 @@
 # Use case диаграмма
 
 
-<img width="461" height="603" alt="Use case" src="https://github.com/user-attachments/assets/4c359ef4-230d-49b7-ba4b-a4bf37721101" />
+
+<img width="485" height="602" alt="Снимок экрана 2025-10-14 232336" src="https://github.com/user-attachments/assets/29ff9eb4-9a65-480f-ac74-afddc9481e03" />
+
+# Блок схемы
+## Авторизация
+<img width="631" height="648" alt="image" src="https://github.com/user-attachments/assets/b09f0ab9-6bce-45d9-9425-ebdd22c9e84b" />
+## Создание заявки(тикета)
+<img width="742" height="612" alt="image" src="https://github.com/user-attachments/assets/22821503-f63a-4153-9b43-38f0fe8d588d" />
+
+
