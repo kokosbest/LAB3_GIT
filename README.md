@@ -28,6 +28,8 @@
 # Блок схемы
 ## Авторизация
 <img width="631" height="648" alt="image" src="https://github.com/user-attachments/assets/b09f0ab9-6bce-45d9-9425-ebdd22c9e84b" />
+
+
 ## Создание заявки(тикета)
 <img width="742" height="612" alt="image" src="https://github.com/user-attachments/assets/22821503-f63a-4153-9b43-38f0fe8d588d" />
 
