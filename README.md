@@ -21,8 +21,6 @@
 
 # Use case диаграмма
 
-<img width="265" height="263" alt="Снимок экрана 2025-10-22 121324" src="https://github.com/user-attachments/assets/dec55499-9a23-4362-97f5-3a4603a9b6c3" />
-
 
 <img width="485" height="602" alt="Снимок экрана 2025-10-14 232336" src="https://github.com/user-attachments/assets/29ff9eb4-9a65-480f-ac74-afddc9481e03" />
 
