@@ -18,7 +18,6 @@
 6)	Отправление ответа пользователю
 7)	Просмотр истории заявок
 
-![втулка 1 2](https://github.com/user-attachments/assets/3718c8aa-4de6-4fc0-b385-a181aa4384ef)
 
 # Use case диаграмма
 
