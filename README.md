@@ -33,4 +33,8 @@
 ## Создание заявки(тикета)
 <img width="742" height="612" alt="image" src="https://github.com/user-attachments/assets/22821503-f63a-4153-9b43-38f0fe8d588d" />
 
+## ER-диаграмма базы-данных
+<img width="818" height="893" alt="image" src="https://github.com/user-attachments/assets/6bfb1bef-27a1-4728-a4f1-35cd2daa3ee8" />
+
+
 
