@@ -3,6 +3,7 @@ import sqlite3
 import json
 import csv
 import xml.etree.ElementTree as ET
+import xml.dom.minidom
 import yaml
 import os
 from typing import List, Dict, Any
@@ -94,10 +95,10 @@ class DataExporter:
         # Экспорт в различные форматы
         self._export_to_json(data)
         self._export_to_csv(data)
-        self._export_to_xml(data)
+        self._export_to_xml(data, table_name)
         self._export_to_yaml(data)
 
-        print("✓ Экспорт завершен! Файлы созданы в папке 'out'")
+        print("  Экспорт завершен! Файлы созданы в папке 'out'")
 
     def _get_table_data_with_relations(self, table_name: str) -> List[Dict[str, Any]]:
         """Получает данные таблицы с связанными данными"""
@@ -146,7 +147,7 @@ class DataExporter:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-        print(f"✓ JSON: {output_path}")
+        print(f"  JSON: {output_path}")
 
     def _export_to_csv(self, data: List[Dict[str, Any]]):
         """Экспорт в CSV"""
@@ -182,32 +183,103 @@ class DataExporter:
 
                 writer.writerow(flat_row)
 
-        print(f"✓ CSV: {output_path}")
+        print(f"  CSV: {output_path}")
 
-    def _export_to_xml(self, data: List[Dict[str, Any]]):
-        """Экспорт в XML"""
+    def _export_to_xml(self, data: List[Dict[str, Any]], table_name: str):
+        """Экспорт в XML с красивым форматированием"""
         output_path = os.path.join(self.output_dir, "data.xml")
 
+        # Создаем корневой элемент
         root = ET.Element('data')
+        root.set('source_table', table_name)
+        root.set('exported_at', self._get_current_timestamp())
+        root.set('total_records', str(len(data)))
 
-        for row in data:
+        # Добавляем записи
+        for record in data:
             record_element = ET.SubElement(root, 'record')
 
-            for key, value in row.items():
+            for key, value in record.items():
                 if isinstance(value, dict):
                     # Обрабатываем вложенные данные
                     relation_element = ET.SubElement(record_element, key)
+                    relation_element.set('type', 'relation')
                     for sub_key, sub_value in value.items():
                         sub_element = ET.SubElement(relation_element, sub_key)
-                        sub_element.text = str(sub_value) if sub_value is not None else ''
+                        sub_element.text = self._safe_string(sub_value)
                 else:
                     element = ET.SubElement(record_element, key)
-                    element.text = str(value) if value is not None else ''
+                    element.text = self._safe_string(value)
 
-        tree = ET.ElementTree(root)
-        tree.write(output_path, encoding='utf-8', xml_declaration=True)
+        # Преобразуем в строку с форматированием
+        rough_string = ET.tostring(root, encoding='utf-8')
 
-        print(f"✓ XML: {output_path}")
+        # Используем minidom для красивого форматирования
+        dom = xml.dom.minidom.parseString(rough_string)
+        pretty_xml = dom.toprettyxml(indent="  ", encoding='utf-8')
+
+        # Убираем лишние пустые строки, которые добавляет minidom
+        pretty_xml_str = pretty_xml.decode('utf-8')
+        pretty_xml_str = '\n'.join([line for line in pretty_xml_str.split('\n') if line.strip()])
+
+        # Сохраняем с правильной кодировкой
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(pretty_xml_str)
+
+        print(f"  XML: {output_path}")
+
+    def _export_to_xml_manual(self, data: List[Dict[str, Any]], table_name: str):
+        """Альтернативный метод экспорта в XML с ручным форматированием"""
+        output_path = os.path.join(self.output_dir, "data_manual.xml")
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            # Записываем XML декларацию
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+
+            # Начинаем корневой элемент
+            f.write(
+                f'<data source_table="{table_name}" exported_at="{self._get_current_timestamp()}" total_records="{len(data)}">\n')
+
+            # Добавляем записи
+            for i, record in enumerate(data):
+                f.write('  <record>\n')
+
+                for key, value in record.items():
+                    if isinstance(value, dict):
+                        # Вложенные данные
+                        f.write(f'    <{key} type="relation">\n')
+                        for sub_key, sub_value in value.items():
+                            safe_value = self._safe_string(sub_value)
+                            f.write(f'      <{sub_key}>{safe_value}</{sub_key}>\n')
+                        f.write(f'    </{key}>\n')
+                    else:
+                        # Простые значения
+                        safe_value = self._safe_string(value)
+                        f.write(f'    <{key}>{safe_value}</{key}>\n')
+
+                f.write('  </record>\n')
+
+            # Закрываем корневой элемент
+            f.write('</data>\n')
+
+        print(f"  XML (manual): {output_path}")
+
+    def _safe_string(self, value: Any) -> str:
+        """Безопасное преобразование значения в строку"""
+        if value is None:
+            return ''
+        elif isinstance(value, bool):
+            return str(value).lower()
+        else:
+            # Экранируем специальные XML символы
+            return str(value).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"',
+                                                                                                      '&quot;').replace(
+                "'", '&apos;')
+
+    def _get_current_timestamp(self) -> str:
+        """Возвращает текущую дату и время в строковом формате"""
+        from datetime import datetime
+        return datetime.now().isoformat()
 
     def _export_to_yaml(self, data: List[Dict[str, Any]]):
         """Экспорт в YAML"""
@@ -216,7 +288,7 @@ class DataExporter:
         with open(output_path, 'w', encoding='utf-8') as f:
             yaml.dump(data, f, allow_unicode=True, default_flow_style=False)
 
-        print(f"✓ YAML: {output_path}")
+        print(f"  YAML: {output_path}")
 
     def list_tables(self) -> List[str]:
         """Возвращает список всех таблиц в базе данных"""
